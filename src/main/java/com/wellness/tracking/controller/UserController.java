@@ -3,8 +3,8 @@ package com.wellness.tracking.controller;
 import com.wellness.tracking.dto.JwtResponse;
 import com.wellness.tracking.dto.UserDTO;
 import com.wellness.tracking.security.JwtTokenUtil;
-import com.wellness.tracking.service.impl.UserDetailsServiceImpl;
-import lombok.AllArgsConstructor;
+import com.wellness.tracking.service.impl.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -14,24 +14,26 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
+@RequestMapping("/api")
 public class UserController {
 
     private static final String REGISTER_PATH = "/register";
     private static final String LOGIN_PATH = "/login";
 
-    private UserDetailsServiceImpl userDetailsService;
-    private AuthenticationManager authenticationManager;
-    private JwtTokenUtil jwtTokenUtil;
+    private final UserService userService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenUtil jwtTokenUtil;
 
     @PostMapping(REGISTER_PATH)
     public ResponseEntity<UserDTO> registerUser(@Valid @RequestBody UserDTO userDTO) {
-        return ResponseEntity.ok(userDetailsService.saveUser(userDTO));
+        return ResponseEntity.ok(userService.saveUser(userDTO));
     }
 
     @PostMapping(LOGIN_PATH)
