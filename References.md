@@ -1,9 +1,0 @@
-- https://www.bezkoder.com/integrate-vue-spring-boot/
-- https://medium.com/the-resonant-web/spring-boot-2-0-project-structure-and-best-practices-part-2-7137bdcba7d3
-- https://zetcode.com/springboot/controlleradvice/
-- https://www.baeldung.com/spring-security-oauth-jwt
-- https://www.baeldung.com/spring-security-two-factor-authentication-with-soft-token
-- https://medium.com/javarevisited/spring-boot-two-factor-authentication-78e00aa10176
-- https://dzone.com/articles/json-web-token-how-to-secure-spring-boot-rest-api
-- https://medium.com/javarevisited/springboot-security-with-jwt-fca1446790ba
-- https://www.techgeeknext.com/spring/spring-boot-security-token-authentication-jwt-mysql
