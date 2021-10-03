@@ -1,15 +1,13 @@
-/*
-package com.wellnesstrackingsystem.wts;
+package com.wellness.tracking;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class WtsApplicationTests {
+class TrackingApplicationTests {
 
 	@Test
 	void contextLoads() {
 	}
 
 }
-*/
