@@ -22,6 +22,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final String LOGIN_PATH = "/api/login";
     private static final String[] AUTH_WHITELIST = {
+            "/api/",
             "/api/login",
             "/api/register"
     };
