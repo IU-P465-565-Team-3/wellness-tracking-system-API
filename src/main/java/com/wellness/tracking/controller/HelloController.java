@@ -10,6 +10,6 @@ public class HelloController {
 
     @GetMapping(DEFAULT_PATH)
     public ResponseEntity<String> defaultPath() {
-        return ResponseEntity.ok("Welcome!");
+        return ResponseEntity.ok("Hello from P465/565 Team 3!");
     }
 }
