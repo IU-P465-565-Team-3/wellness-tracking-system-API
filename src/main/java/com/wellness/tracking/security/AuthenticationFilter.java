@@ -30,7 +30,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
 
-    @Value("${jwt.secret}")
+    @Value("${jwt.cookieName}")
     private static String cookieName;
 
     @Override
@@ -56,7 +56,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         response.setHeader(AUTHORIZATION, BEARER + jwtTotken);
         response.setStatus(HttpStatus.OK.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        Cookie sessionCookie = new Cookie( cookieName, jwtTotken);
+        //System.out.println("============"+cookieName);
+        Cookie sessionCookie = new Cookie( "accessCookie", jwtTotken);
         response.addCookie(sessionCookie);
         response.getWriter().write(new JwtResponse(jwtTotken).toString());
     }

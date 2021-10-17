@@ -24,7 +24,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtTokenUtil jwtTokenUtil;
 
-    @Value("${jwt.secret}")
+    @Value("${jwt.cookieName}")
     private static String cookieName;
 
     @Override
@@ -40,10 +40,10 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                 String username = "";
                 Cookie[] cookies = request.getCookies();
                 for (Cookie cookie : cookies) {
-                    if (cookieName.equals(cookie.getName())) {
+                    if ("accessCookie".equals(cookie.getName())) {
                         String accessToken = cookie.getValue();
                         if (accessToken != null) {
-                            username = jwtTokenUtil.validateTokenAndFetchUsername(jwtToken);
+                            username = jwtTokenUtil.validateTokenAndFetchUsername(accessToken);
                         } else {
                             username = null;
                         }
