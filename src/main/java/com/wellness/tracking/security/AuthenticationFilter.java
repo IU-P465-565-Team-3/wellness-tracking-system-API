@@ -3,6 +3,7 @@ package com.wellness.tracking.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wellness.tracking.dto.JwtResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,6 +15,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -27,6 +29,9 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
+
+    @Value("${jwt.secret}")
+    private static String cookieName;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -51,6 +56,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         response.setHeader(AUTHORIZATION, BEARER + jwtTotken);
         response.setStatus(HttpStatus.OK.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        Cookie sessionCookie = new Cookie( cookieName, jwtTotken);
+        response.addCookie(sessionCookie);
         response.getWriter().write(new JwtResponse(jwtTotken).toString());
     }
 }
