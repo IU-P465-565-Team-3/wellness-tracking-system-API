@@ -1,18 +1,22 @@
-//package com.wellness.tracking.model;
-//
-//import lombok.Data;
-//import lombok.experimental.Accessors;
-//
-//import javax.persistence.*;
-//
-//@Entity
-//@Data
-//@Accessors(chain = true)
-//public class Role {
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Long id;
-//
-//    @Column
-//    private String roleName;
-//}
+package com.wellness.tracking.model;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+import javax.persistence.*;
+
+import static javax.persistence.GenerationType.AUTO;
+
+@Entity
+@Data
+@Accessors(chain = true)
+@NoArgsConstructor
+@AllArgsConstructor
+public class Role {
+    @Id
+    @GeneratedValue(strategy = AUTO)
+    private Long id;
+
+    @Column
+    private String roleName;
+}

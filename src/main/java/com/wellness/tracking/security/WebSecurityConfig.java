@@ -21,9 +21,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final String LOGIN_PATH = "/api/login";
+    private static final String ADMIN_API_MATCHER = "/api/admin/**";
+    private static final String CLIENT_API_MATCHER = "/api/**";
     private static final String[] AUTH_WHITELIST = {
             "/",
-            "/api/",
             "/api/login",
             "/api/register"
     };
@@ -56,6 +57,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests().antMatchers(AUTH_WHITELIST).permitAll()
+//                .and()
+//                .authorizeRequests().antMatchers(CLIENT_API_MATCHER).hasAnyAuthority("CLIENT")
+//                .and()
+//                .authorizeRequests().antMatchers(ADMIN_API_MATCHER).hasAnyAuthority("ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(authenticationFilter)
