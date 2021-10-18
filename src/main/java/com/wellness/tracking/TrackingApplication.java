@@ -20,6 +20,7 @@ public class TrackingApplication {
 		return args -> {
 			repo.save(new Role(null, "CLIENT"));
 			repo.save(new Role(null, "ADMIN"));
+			repo.save(new Role(null, "PROFESSIONAL"));
 		};
 	}
 }
