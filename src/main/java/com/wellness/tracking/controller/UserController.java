@@ -12,10 +12,7 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -26,14 +23,20 @@ public class UserController {
 
     private static final String REGISTER_PATH = "/register";
     private static final String LOGIN_PATH = "/login";
+    private static final String DEFAULT_PATH = "/";
 
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
 
+    @GetMapping(DEFAULT_PATH)
+    public ResponseEntity<String> defaultPath() {
+        return ResponseEntity.ok("Valid Token");
+    }
+
     @PostMapping(REGISTER_PATH)
     public ResponseEntity<UserDTO> registerUser(@Valid @RequestBody UserDTO userDTO) {
-        return ResponseEntity.ok(userService.saveUser(userDTO));
+        return ResponseEntity.ok(userService.registerUser(userDTO));
     }
 
     @PostMapping(LOGIN_PATH)

@@ -3,6 +3,7 @@ package com.wellness.tracking.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -12,6 +13,11 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 
@@ -19,7 +25,7 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 public class AuthorizationFilter extends OncePerRequestFilter {
 
     public static final String AUTHORIZATION = "Authorization";
-    public static final String BEARER = "Bearer ";
+    public static final String BEARER = "Bearer";
     private static final String LOGIN_PATH = "/api/login";
 
     private final JwtTokenUtil jwtTokenUtil;
@@ -33,31 +39,29 @@ public class AuthorizationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        String authorizationHeader = request.getHeader(AUTHORIZATION);
-        if (authorizationHeader != null && authorizationHeader.startsWith(BEARER)) {
-            try {
-                String jwtToken = authorizationHeader.substring(BEARER.length());
-                String username = "";
-                Cookie[] cookies = request.getCookies();
-                for (Cookie cookie : cookies) {
-                    if ("accessCookie".equals(cookie.getName())) {
-                        String accessToken = cookie.getValue();
-                        if (accessToken != null) {
-                            username = jwtTokenUtil.validateTokenAndFetchUsername(accessToken);
-                        } else {
-                            username = null;
-                        }
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            Optional<String> accessToken = Arrays.stream(request.getCookies())
+                    .filter(cookie->"accessCookie".equals(cookie.getName()))
+                    .map(Cookie::getValue)
+                    .findAny();
 
+            if (accessToken.isPresent() && accessToken.get().startsWith(BEARER)) {
+                try {
+                    String jwtToken = accessToken.get().substring(BEARER.length());
+                    String username = jwtTokenUtil.validateTokenAndFetchUsername(jwtToken);
+                    Collection<SimpleGrantedAuthority> userRoles = new ArrayList<>();
+                    userRoles.add(new SimpleGrantedAuthority(jwtTokenUtil.validateTokenAndFetchClaims(jwtToken)));
+                    if (username != null) {
+                        final UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null, userRoles);
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                        filterChain.doFilter(request, response);
                     }
+                } catch (Exception exception) {
+                    response.sendError(FORBIDDEN.value(), exception.getMessage());
                 }
-
-                if (username != null) {
-                    final UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null, null);
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                    filterChain.doFilter(request, response);
-                }
-            } catch (Exception exception) {
-                response.sendError(FORBIDDEN.value(), exception.getMessage());
+            } else {
+                filterChain.doFilter(request, response);
             }
         } else {
             filterChain.doFilter(request, response);
