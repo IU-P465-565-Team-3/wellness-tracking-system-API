@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MediaContentRepository extends JpaRepository<MediaContent, Long> {
-    MediaContent findMediaContentById();
+    MediaContent findMediaContentById(Long id);
 }
