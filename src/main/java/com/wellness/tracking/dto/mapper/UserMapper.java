@@ -12,7 +12,7 @@ public class UserMapper {
 
 	public static UserDTO toUserDto(User user) {
 		return new UserDTO()
-				.setUsername(user.getUsername());
+				.setUsername(user.getUsername())
+				.setRole(user.getRole().getName());
 	}
-
 }

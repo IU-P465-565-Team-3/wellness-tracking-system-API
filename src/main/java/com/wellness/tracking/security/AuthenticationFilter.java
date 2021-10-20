@@ -25,7 +25,7 @@ import java.util.Map;
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     public static final String AUTHORIZATION = "Authorization";
-    public static final String BEARER = "Bearer ";
+    public static final String BEARER = "Bearer";
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
@@ -53,12 +53,11 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
         String jwtTotken = jwtTokenUtil.generateToken(authentication);
-        response.setHeader(AUTHORIZATION, BEARER + jwtTotken);
         response.setStatus(HttpStatus.OK.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         //System.out.println("============"+cookieName);
-        Cookie sessionCookie = new Cookie( "accessCookie", jwtTotken);
+        Cookie sessionCookie = new Cookie( "accessCookie", BEARER + jwtTotken);
         response.addCookie(sessionCookie);
-        response.getWriter().write(new JwtResponse(jwtTotken).toString());
+//        response.getWriter().write(new JwtResponse(jwtTotken).toString());
     }
 }
