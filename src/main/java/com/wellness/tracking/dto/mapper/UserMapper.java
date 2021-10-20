@@ -7,7 +7,7 @@ public class UserMapper {
 	public static User toUser(UserDTO userDTO) {
 		return new User()
 				.setUsername(userDTO.getUsername())
-				.setPassword(userDTO.getPassword());
+				.setPasswordHash(userDTO.getPassword());
 	}
 
 	public static UserDTO toUserDto(User user) {
