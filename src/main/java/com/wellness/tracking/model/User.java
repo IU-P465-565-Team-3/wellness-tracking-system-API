@@ -1,37 +1,41 @@
 package com.wellness.tracking.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
-
-import java.util.ArrayList;
-import java.util.Collection;
-
-import static javax.persistence.FetchType.EAGER;
-import static javax.persistence.GenerationType.AUTO;
+import java.sql.Date;
 
 @Entity
-@Table(name = "user_")
-@Data
+@Table(name = "app_user")
+@Getter
+@Setter
 @Accessors(chain = true)
-@NoArgsConstructor
-@AllArgsConstructor
 public class User {
-
     @Id
-    @GeneratedValue(strategy = AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true)
     private String username;
 
     @Column
-    private String password;
+    private String passwordHash;
 
-    @ManyToMany(fetch = EAGER)
-    private Collection<Role> roles = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id")
+    private Role role;
 
+    @Column
+    private String firstName;
+
+    @Column
+    private String lastName;
+
+    @Column
+    private String gender;
+
+    @Column
+    private Date dateOfBirth;
 }

@@ -1,22 +1,21 @@
 package com.wellness.tracking.model;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.Accessors;
 import javax.persistence.*;
 
 import static javax.persistence.GenerationType.AUTO;
 
 @Entity
-@Data
-@Accessors(chain = true)
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Accessors(chain = true)
 public class Role {
     @Id
     @GeneratedValue(strategy = AUTO)
     private Long id;
 
     @Column
-    private String roleName;
+    private String name;
 }

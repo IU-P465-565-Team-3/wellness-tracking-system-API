@@ -7,6 +7,7 @@ import com.wellness.tracking.model.User;
 import com.wellness.tracking.repository.RoleRepository;
 import com.wellness.tracking.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,8 +17,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -31,10 +31,10 @@ public class UserDetailsServiceImpl implements UserService, UserDetailsService {
     @Override
     public UserDTO registerUser(UserDTO userDTO) {
         userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        userRepository.save(UserMapper.toUser(userDTO));
-        User user = userRepository.findUserByUsername(userDTO.getUsername());
-        Role role = roleRepository.findRoleByRoleName(userDTO.getRoleName());
-        user.getRoles().add(role);
+        Role role = roleRepository.findRoleByName(userDTO.getRole());
+        User user = UserMapper.toUser(userDTO);
+        user.setRole(role);
+        userRepository.save(user);
         return UserMapper.toUserDto(user);
     }
 
@@ -45,11 +45,11 @@ public class UserDetailsServiceImpl implements UserService, UserDetailsService {
             throw new UsernameNotFoundException("User not found with username: " + username);
         }
 
-        Collection<SimpleGrantedAuthority> userRoles = user.getRoles().stream()
-                .map( n -> new SimpleGrantedAuthority(n.getRoleName()))
-                .collect( Collectors.toList());
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        SimpleGrantedAuthority userRole = new SimpleGrantedAuthority(user.getRole().getId().toString());
+        authorities.add(userRole);
 
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),
-                userRoles);
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPasswordHash(),
+                authorities);
     }
 }
