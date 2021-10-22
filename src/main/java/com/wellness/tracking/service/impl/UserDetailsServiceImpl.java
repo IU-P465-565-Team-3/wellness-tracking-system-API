@@ -7,6 +7,8 @@ import com.wellness.tracking.model.User;
 import com.wellness.tracking.repository.RoleRepository;
 import com.wellness.tracking.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,10 +16,14 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +42,19 @@ public class UserDetailsServiceImpl implements UserService, UserDetailsService {
         user.setRole(role);
         userRepository.save(user);
         return UserMapper.toUserDto(user);
+    }
+
+    @Override
+    public User updateUser(String username, User user) {
+        User userData = userRepository.findUserByUsername(username);
+        if (userData != null) {
+            userData.setPasswordHash(user.getPasswordHash());
+            userData.setFirstName(user.getFirstName());
+            userData.setLastName(user.getLastName());
+            userData.setRole(user.getRole());
+        }
+        userRepository.save(userData);
+        return userData;
     }
 
     @Override
