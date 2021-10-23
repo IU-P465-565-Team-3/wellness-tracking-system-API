@@ -3,8 +3,10 @@ package com.wellness.tracking.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -52,13 +54,13 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         String jwtTotken = jwtTokenUtil.generateToken(authentication);
         response.setStatus(HttpStatus.OK.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        Cookie sessionCookie = new Cookie( "accessCookie", BEARER + jwtTotken);
-        // Disabling this since all dev environments do not use TLS
-        // sessionCookie.setSecure(true);
-        sessionCookie.setHttpOnly(true);
-        // Set cookie to expire after two weeks
-        sessionCookie.setMaxAge(60 * 60 * 24 * 14);
-        sessionCookie.setPath("/");
-        response.addCookie(sessionCookie);
+        ResponseCookie sessionCookie = ResponseCookie.from( "accessCookie", BEARER + jwtTotken)
+                .httpOnly(true)
+                .secure(true)
+                .maxAge(60 * 60 * 24 * 14) // Set cookie to expire after two weeks
+                .path("/")
+                .sameSite("None")
+                .build();
+        response.setHeader(HttpHeaders.SET_COOKIE, sessionCookie.toString());
     }
 }
