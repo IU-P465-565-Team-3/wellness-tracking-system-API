@@ -1,11 +1,12 @@
 package com.wellness.tracking.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wellness.tracking.dto.JwtResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,14 +25,12 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    public static final String AUTHORIZATION = "Authorization";
     public static final String BEARER = "Bearer";
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
 
     @Value("${jwt.cookieName}")
-    private static String cookieName;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -55,9 +54,13 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         String jwtTotken = jwtTokenUtil.generateToken(authentication);
         response.setStatus(HttpStatus.OK.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        //System.out.println("============"+cookieName);
-        Cookie sessionCookie = new Cookie( "accessCookie", BEARER + jwtTotken);
-        response.addCookie(sessionCookie);
-//        response.getWriter().write(new JwtResponse(jwtTotken).toString());
+        ResponseCookie sessionCookie = ResponseCookie.from( "accessCookie", BEARER + jwtTotken)
+                .httpOnly(true)
+                .secure(true)
+                .maxAge(60 * 60 * 24 * 14) // Set cookie to expire after two weeks
+                .path("/")
+                .sameSite("None")
+                .build();
+        response.setHeader(HttpHeaders.SET_COOKIE, sessionCookie.toString());
     }
 }
