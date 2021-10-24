@@ -18,7 +18,7 @@ public class Listing {
     private ListingType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "publisher_id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Column
