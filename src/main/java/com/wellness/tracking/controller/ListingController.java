@@ -26,11 +26,10 @@ public class ListingController {
     @GetMapping("/listing")
     public ResponseEntity<List<Listing>> getAllListings(){
         try {
-            List<Listing> listings = new ArrayList<Listing>();
+            List<Listing> listings =  listingRepository.findAll();
 
-            if (listings.isEmpty()){
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
+
+
 
             return new ResponseEntity<>(listings, HttpStatus.OK);
         } catch (Exception e) {
