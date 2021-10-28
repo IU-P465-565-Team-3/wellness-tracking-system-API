@@ -2,9 +2,8 @@ package com.wellness.tracking.service.impl;
 
 import com.wellness.tracking.dto.UserDTO;
 import com.wellness.tracking.dto.mapper.UserMapper;
-import com.wellness.tracking.model.Role;
+import com.wellness.tracking.enums.Role;
 import com.wellness.tracking.model.User;
-import com.wellness.tracking.repository.RoleRepository;
 import com.wellness.tracking.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -26,12 +25,11 @@ public class UserDetailsServiceImpl implements UserService, UserDetailsService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final RoleRepository roleRepository;
 
     @Override
     public UserDTO registerUser(UserDTO userDTO) {
         userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        Role role = roleRepository.findRoleByName(userDTO.getRole());
+        Role role = userDTO.getRole();
         User user = UserMapper.toUser(userDTO);
         user.setRole(role);
         userRepository.save(user);
@@ -46,7 +44,7 @@ public class UserDetailsServiceImpl implements UserService, UserDetailsService {
         }
 
         List<GrantedAuthority> authorities = new ArrayList<>();
-        SimpleGrantedAuthority userRole = new SimpleGrantedAuthority(user.getRole().getId().toString());
+        SimpleGrantedAuthority userRole = new SimpleGrantedAuthority(user.getRole().getValue());
         authorities.add(userRole);
 
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPasswordHash(),

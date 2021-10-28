@@ -5,14 +5,21 @@ import com.wellness.tracking.model.User;
 
 public class UserMapper {
 	public static User toUser(UserDTO userDTO) {
-		return new User()
-				.setUsername(userDTO.getUsername())
-				.setPasswordHash(userDTO.getPassword());
+		User user = new User();
+		user.setUsername(userDTO.getUsername());
+		user.setPasswordHash(userDTO.getPassword());
+		user.setFirstName(userDTO.getFirstName());
+		user.setLastName(userDTO.getLastName());
+		user.setGender(userDTO.getGender());
+		user.setDateOfBirth(userDTO.getDateOfBirth());
+		return user;
 	}
 
 	public static UserDTO toUserDto(User user) {
 		return new UserDTO()
 				.setUsername(user.getUsername())
-				.setRole(user.getRole().getName());
+				.setRole(user.getRole())
+				.setFirstName(user.getFirstName())
+				.setLastName(user.getLastName());
 	}
 }

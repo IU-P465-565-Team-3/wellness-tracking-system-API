@@ -4,12 +4,23 @@ import javax.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.jpa.domain.AbstractPersistable;
+
+import java.sql.Date;
 
 @Entity
 @Getter
 @Setter
-public class Enrollment {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Enrollment extends AbstractPersistable<Long> {
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "FK_ENROLLMENT_USER"))
+    private PublicUser user;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "listing_id", nullable = false, foreignKey = @ForeignKey(name = "FK_ENROLLMENT_LISTING"))
+    private FitnessPlan plan;
+
+    @Column
+    private Date startDate;
 }
