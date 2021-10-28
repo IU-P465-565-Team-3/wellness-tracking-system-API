@@ -1,13 +1,13 @@
 package com.wellness.tracking.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import com.wellness.tracking.model.Listing;
+import com.wellness.tracking.model.ListingSummary;
 import com.wellness.tracking.repository.ListingRepository;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.wellness.tracking.repository.ListingSummaryRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,17 +20,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class ListingController {
 
-    @Autowired
-    ListingRepository listingRepository;
+    final ListingRepository listingRepository;
+    final ListingSummaryRepository listingSummaryRepository;
+
+    public ListingController(ListingRepository listingRepository, ListingSummaryRepository listingSummaryRepository) {
+        this.listingRepository = listingRepository;
+        this.listingSummaryRepository = listingSummaryRepository;
+    }
 
     @GetMapping("/listing")
-    public ResponseEntity<List<Listing>> getAllListings(){
+    public ResponseEntity<List<ListingSummary>> getAllListings(){
         try {
-            List<Listing> listings =  listingRepository.findAll();
-
-
-
-
+            List<ListingSummary> listings =  listingSummaryRepository.findAllByIsPrivateIsFalse();
             return new ResponseEntity<>(listings, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);

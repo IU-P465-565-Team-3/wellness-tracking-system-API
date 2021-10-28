@@ -1,6 +1,6 @@
 package com.wellness.tracking.model;
 
-import com.wellness.tracking.enums.ContentType;
+import com.wellness.tracking.enums.Role;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
@@ -8,21 +8,22 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import javax.persistence.*;
 
-@Entity
+@MappedSuperclass
 @Getter
 @Setter
-public class MediaContent extends AbstractPersistable<Long> {
+public abstract class AbstractUser extends AbstractPersistable<Long> {
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Type(type = "postgres_enum")
-    private ContentType type;
+    protected Role role;
+
+    @Column(unique = true)
+    protected String username;
 
     @Column
-    private String description;
+    protected String firstName;
 
     @Column
-    private String sourceUrl;
-
-    @Column
-    private String annotation;
+    protected String lastName;
 }
