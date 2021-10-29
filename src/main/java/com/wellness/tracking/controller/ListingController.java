@@ -31,7 +31,7 @@ public class ListingController {
             listingSummaryRepository.findAllByIsPrivateIsFalse().forEach(listings::add);
         } else {
             listingSummaryRepository.findByDescriptionContainingAndIsPrivateIsFalse(q).forEach(listings::add);
-            listingSummaryRepository.findByUserIn(userRepository.findByfirstNameContaining(q)).forEach(listings::add);
+            listingSummaryRepository.findByUserIn(userRepository.findByFirstNameContaining(q)).forEach(listings::add);
         }
         return new ResponseEntity<>(listings, HttpStatus.OK);
     }
