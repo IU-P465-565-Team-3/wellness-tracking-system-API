@@ -1,5 +1,6 @@
 package com.wellness.tracking.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -8,34 +9,31 @@ import com.wellness.tracking.model.ListingSummary;
 import com.wellness.tracking.repository.ListingRepository;
 
 import com.wellness.tracking.repository.ListingSummaryRepository;
+import com.wellness.tracking.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class ListingController {
 
     final ListingRepository listingRepository;
     final ListingSummaryRepository listingSummaryRepository;
-
-    public ListingController(ListingRepository listingRepository, ListingSummaryRepository listingSummaryRepository) {
-        this.listingRepository = listingRepository;
-        this.listingSummaryRepository = listingSummaryRepository;
-    }
+    final UserRepository userRepository;
 
     @GetMapping("/listing")
-    public ResponseEntity<List<ListingSummary>> getAllListings(){
-        try {
-            List<ListingSummary> listings =  listingSummaryRepository.findAllByIsPrivateIsFalse();
-            return new ResponseEntity<>(listings, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<List<ListingSummary>> getAllListings(@RequestParam(required = false) String q){
+        List<ListingSummary> listings = new ArrayList<>();
+        if (q == null) {
+            listingSummaryRepository.findAllByIsPrivateIsFalse().forEach(listings::add);
+        } else {
+            listingSummaryRepository.findByDescriptionContainingAndIsPrivateIsFalse(q).forEach(listings::add);
+            listingSummaryRepository.findByUserIn(userRepository.findByfirstNameContaining(q)).forEach(listings::add);
         }
+        return new ResponseEntity<>(listings, HttpStatus.OK);
     }
 
     @GetMapping("/listing/{id}")

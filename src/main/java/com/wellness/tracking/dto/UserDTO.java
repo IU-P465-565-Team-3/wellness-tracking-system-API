@@ -6,6 +6,7 @@ import com.wellness.tracking.enums.Role;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
 import java.sql.Date;
@@ -31,6 +32,7 @@ public class UserDTO {
 	private String gender;
 
 	@NotNull
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date dateOfBirth;
 
 	@NotNull
