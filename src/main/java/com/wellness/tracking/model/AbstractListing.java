@@ -8,6 +8,7 @@ import org.hibernate.annotations.Type;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @MappedSuperclass
 @Getter
@@ -36,5 +37,11 @@ public abstract class AbstractListing extends AbstractPersistable<Long> {
     private String imageAnnotation;
 
     @Column
-    private boolean isPrivate;
+    private Boolean isPrivate;
+
+    @Column
+    private Boolean isApproved;
+
+    @ManyToMany
+    private Set<Tag> tags;
 }
