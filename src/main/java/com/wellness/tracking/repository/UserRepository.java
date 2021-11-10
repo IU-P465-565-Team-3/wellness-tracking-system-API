@@ -1,6 +1,5 @@
 package com.wellness.tracking.repository;
 
-import com.wellness.tracking.model.ListingSummary;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.wellness.tracking.model.User;

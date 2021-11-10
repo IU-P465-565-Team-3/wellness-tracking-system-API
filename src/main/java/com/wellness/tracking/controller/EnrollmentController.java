@@ -5,10 +5,9 @@ import com.wellness.tracking.model.FitnessPlan;
 import com.wellness.tracking.model.Listing;
 import com.wellness.tracking.model.PublicUser;
 import com.wellness.tracking.repository.EnrollmentRepository;
-
 import com.wellness.tracking.repository.ListingRepository;
 import com.wellness.tracking.repository.PublicUserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,22 +19,14 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
+@AllArgsConstructor
 public class EnrollmentController {
 
-    final
-    PublicUserRepository publicUserRepository;
+    final PublicUserRepository publicUserRepository;
 
-    final
-    ListingRepository listingRepository;
+    final ListingRepository listingRepository;
 
-    final
-    EnrollmentRepository enrollmentRepository;
-
-    public EnrollmentController(PublicUserRepository publicUserRepository, ListingRepository listingRepository, EnrollmentRepository enrollmentRepository) {
-        this.publicUserRepository = publicUserRepository;
-        this.listingRepository = listingRepository;
-        this.enrollmentRepository = enrollmentRepository;
-    }
+    final EnrollmentRepository enrollmentRepository;
 
     @GetMapping("/enrollment")
     public ResponseEntity<List<Enrollment>> getEnrollments() {
@@ -44,7 +35,7 @@ public class EnrollmentController {
             List<Enrollment> enrollments = enrollmentRepository.findAllByUser(currentUser);
             return new ResponseEntity<>(enrollments, HttpStatus.OK);
         } catch(Exception e) {
-            return new ResponseEntity(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -58,11 +49,11 @@ public class EnrollmentController {
             PublicUser currentUser = getCurrentUser();
             plan.setUser(currentUser);
             enrollment.setUser(currentUser);
-            plan.setPrivate(true);
+            plan.setIsPrivate(true);
             enrollmentRepository.save(enrollment);
-            return new ResponseEntity(null, HttpStatus.OK);
+            return new ResponseEntity<>(null, HttpStatus.OK);
         } catch(Exception e) {
-            return new ResponseEntity(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -80,9 +71,9 @@ public class EnrollmentController {
             enrollment.setUser(currentUser);
             enrollment.setPlan((FitnessPlan) listing.get());
             enrollmentRepository.save(enrollment);
-            return new ResponseEntity(null, HttpStatus.OK);
-        } catch(Exception e) {
-            return new ResponseEntity(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(null, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
