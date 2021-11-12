@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
@@ -25,7 +26,9 @@ public class MediaController {
     public ResponseEntity<String> uploadFile(@PathVariable MultipartFile file) {
         try {
             String tmpDir = System.getProperty("java.io.tmpdir");
-            String fileName = UUID.randomUUID().toString().replace("-", "");
+            int extIdx = file.getOriginalFilename().lastIndexOf('.');
+            String extension = extIdx != -1 ? file.getOriginalFilename().substring(extIdx) : "";
+            String fileName = UUID.randomUUID().toString().replace("-", "") + extension;
             Path filePath = Paths.get(tmpDir, fileName);
             file.transferTo(filePath);
             s3Repository.uploadObject(fileName, filePath.toFile());
