@@ -61,5 +61,6 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                 .sameSite("None")
                 .build();
         response.setHeader(HttpHeaders.SET_COOKIE, sessionCookie.toString());
+        super.successfulAuthentication(request, response, chain, authentication);
     }
 }

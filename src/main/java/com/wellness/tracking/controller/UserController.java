@@ -2,9 +2,12 @@ package com.wellness.tracking.controller;
 
 import com.wellness.tracking.dto.JwtResponse;
 import com.wellness.tracking.dto.UserDTO;
+import com.wellness.tracking.model.PublicUser;
+import com.wellness.tracking.repository.PublicUserRepository;
 import com.wellness.tracking.security.JwtTokenUtil;
 import com.wellness.tracking.service.impl.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -29,6 +32,8 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
 
+    private final PublicUserRepository publicUserRepository;
+
     @GetMapping(DEFAULT_PATH)
     public ResponseEntity<String> defaultPath() {
         return ResponseEntity.ok("Valid Token");
@@ -45,7 +50,12 @@ public class UserController {
 
         final Authentication auth = authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
         SecurityContextHolder.getContext().setAuthentication(auth);
-        return ResponseEntity.ok(new JwtResponse(jwtTokenUtil.generateToken(auth)));
+        if (SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
+            PublicUser userProfile = publicUserRepository.findUserByUsername(authenticationRequest.getUsername());
+            return ResponseEntity.ok(userProfile);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
     }
 
     private Authentication authenticate(String username, String password) throws Exception {

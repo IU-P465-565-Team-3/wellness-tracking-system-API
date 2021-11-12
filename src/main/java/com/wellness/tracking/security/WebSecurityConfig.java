@@ -47,7 +47,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         AuthenticationFilter authenticationFilter = new AuthenticationFilter(authenticationManagerBean(), jwtTokenUtil);
-        authenticationFilter.setFilterProcessesUrl(LOGIN_PATH);
         httpSecurity
                 .cors()
                 .and()
@@ -56,11 +55,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .authorizeRequests().antMatchers(AUTH_WHITELIST).permitAll()
+                .authorizeRequests()
+                .antMatchers(AUTH_WHITELIST).permitAll()
 //                .and()
 //                .authorizeRequests().antMatchers(CLIENT_API_MATCHER).hasAnyAuthority("CLIENT")
-//                .and()
-//                .authorizeRequests().antMatchers(ADMIN_API_MATCHER).hasAnyAuthority("ADMIN")
+                .antMatchers(ADMIN_API_MATCHER).hasAnyAuthority("ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(authenticationFilter)
