@@ -3,7 +3,6 @@ package com.wellness.tracking.repository;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.PutObjectResult;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.net.URL;
 
 @Configuration
 class S3Config {
@@ -35,7 +35,8 @@ public class S3Repository {
        this.bucketName = bucketName;
    }
 
-   public PutObjectResult uploadObject(String fileName, File file) {
-       return s3Client.putObject(this.bucketName, fileName, file);
+   public URL uploadObject(String fileName, File file) {
+       s3Client.putObject(this.bucketName, fileName, file);
+       return s3Client.getUrl(this.bucketName, fileName);
    }
 }
