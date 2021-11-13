@@ -42,6 +42,6 @@ public abstract class AbstractListing extends AbstractPersistable<Long> {
     @Column
     private Boolean isApproved;
 
-    @ManyToMany
+    @ManyToMany // 1 to many [one liting have mutliple tags]
     private Set<Tag> tags;
 }
