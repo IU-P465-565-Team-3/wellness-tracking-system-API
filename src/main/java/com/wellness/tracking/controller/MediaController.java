@@ -10,8 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.nio.file.Files;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
@@ -31,10 +30,10 @@ public class MediaController {
             String fileName = UUID.randomUUID().toString().replace("-", "") + extension;
             Path filePath = Paths.get(tmpDir, fileName);
             file.transferTo(filePath);
-            s3Repository.uploadObject(fileName, filePath.toFile());
-            return new ResponseEntity<>(fileName, HttpStatus.OK);
+            URL objectUrl = s3Repository.uploadObject(fileName, filePath.toFile());
+            return new ResponseEntity<>(objectUrl.toString(), HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>("Unable to upload.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("", HttpStatus.BAD_REQUEST);
         }
     }
 }

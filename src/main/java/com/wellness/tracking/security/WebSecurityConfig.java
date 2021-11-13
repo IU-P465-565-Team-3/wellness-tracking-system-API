@@ -12,7 +12,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -20,9 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private static final String LOGIN_PATH = "/api/login";
     private static final String ADMIN_API_MATCHER = "/api/admin/**";
-    private static final String CLIENT_API_MATCHER = "/api/**";
     private static final String[] AUTH_WHITELIST = {
             "/",
             "/api/login",
@@ -46,7 +43,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-        AuthenticationFilter authenticationFilter = new AuthenticationFilter(authenticationManagerBean(), jwtTokenUtil);
         httpSecurity
                 .cors()
                 .and()
@@ -62,7 +58,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(ADMIN_API_MATCHER).hasAnyAuthority("ADMIN")
                 .anyRequest().authenticated()
                 .and()
-                .addFilter(authenticationFilter)
-                .addFilterBefore(new AuthorizationFilter(jwtTokenUtil), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new AuthorizationFilter(jwtTokenUtil), AuthenticationFilter.class);
     }
 }

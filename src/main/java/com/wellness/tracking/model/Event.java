@@ -18,10 +18,10 @@ public class Event extends AbstractPersistable<Long> {
     private String description;
 
     @Column
-    private int startTime;
+    private Long startTime;
 
     @Column
-    private int endTime;
+    private Long endTime;
 
     @Column
     private String metadata;

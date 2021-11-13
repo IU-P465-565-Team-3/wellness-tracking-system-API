@@ -3,8 +3,6 @@ package com.wellness.tracking.model;
 import com.wellness.tracking.enums.ListingType;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Polymorphism;
-import org.hibernate.annotations.PolymorphismType;
 
 import javax.persistence.*;
 import java.util.Collection;
