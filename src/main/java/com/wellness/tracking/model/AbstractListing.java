@@ -43,5 +43,9 @@ public abstract class AbstractListing extends AbstractPersistable<Long> {
     private Boolean isApproved;
 
     @ManyToMany
+    @JoinTable(
+            name = "listing_tag",
+            joinColumns = @JoinColumn(name = "listing_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tags;
 }
