@@ -11,4 +11,5 @@ import javax.persistence.Table;
 @Getter
 @Setter
 public class PublicUser extends AbstractUser {
+
 }

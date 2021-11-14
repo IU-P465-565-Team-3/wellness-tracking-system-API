@@ -25,7 +25,6 @@ public class ListingController {
 
     final ListingRepository listingRepository;
     final ListingSummaryRepository listingSummaryRepository;
-    final UserRepository userRepository;
     final PublicUserRepository publicUserRepository;
 
     @GetMapping("/listing")
@@ -35,7 +34,7 @@ public class ListingController {
             listingSummaryRepository.findAllByIsPrivateIsFalse().forEach(listings::add);
         } else {
             listingSummaryRepository.findByDescriptionContainingAndIsPrivateIsFalse(q).forEach(listings::add);
-            listingSummaryRepository.findByUserIn(userRepository.findByFirstNameContaining(q)).forEach(listings::add);
+            listingSummaryRepository.findByUserIn(publicUserRepository.findByFirstNameContaining(q)).forEach(listings::add);
         }
         return new ResponseEntity<>(listings, HttpStatus.OK);
     }
