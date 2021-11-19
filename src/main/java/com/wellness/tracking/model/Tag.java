@@ -1,5 +1,6 @@
 package com.wellness.tracking.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.jpa.domain.AbstractPersistable;
@@ -16,6 +17,7 @@ import java.util.Set;
 public class Tag extends AbstractPersistable<Long> {
     private String name;
 
+    @JsonIgnore
     @ManyToMany
     @JoinTable(
         name = "listing_tag",
