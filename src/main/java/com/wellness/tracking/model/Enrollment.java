@@ -25,6 +25,9 @@ public class Enrollment extends AbstractPersistable<Long> {
     @Column
     private Date startDate;
 
+    @Column
+    private Double rating;
+
     @ManyToMany
     @JoinTable(
             name = "enrollment_age_group",

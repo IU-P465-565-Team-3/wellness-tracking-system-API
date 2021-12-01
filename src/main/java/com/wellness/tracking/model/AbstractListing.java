@@ -42,6 +42,9 @@ public abstract class AbstractListing extends AbstractPersistable<Long> {
     @Column
     private Boolean isApproved;
 
+    @Column
+    private Double avgRating;
+
     @ManyToMany
     @JoinTable(
             name = "listing_tag",

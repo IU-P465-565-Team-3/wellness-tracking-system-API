@@ -1,9 +1,6 @@
 package com.wellness.tracking.controller;
 
-import com.wellness.tracking.model.Enrollment;
-import com.wellness.tracking.model.FitnessPlan;
-import com.wellness.tracking.model.Listing;
-import com.wellness.tracking.model.PublicUser;
+import com.wellness.tracking.model.*;
 import com.wellness.tracking.repository.EnrollmentRepository;
 import com.wellness.tracking.repository.ListingRepository;
 import com.wellness.tracking.repository.PublicUserRepository;
@@ -71,6 +68,28 @@ public class EnrollmentController {
             enrollment.setUser(currentUser);
             enrollment.setPlan((FitnessPlan) listing.get());
             enrollmentRepository.save(enrollment);
+            return new ResponseEntity<>(null, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/updateEnrollment")
+    public ResponseEntity updateEnrollment(@RequestBody Enrollment enrollment, User user) {
+        try {
+            Enrollment enrollmentRecord = enrollmentRepository.findEnrollmentById(enrollment.getId());
+            Listing listing = listingRepository.getById(enrollmentRecord.getPlan().getId());
+
+            long countEnrollments = enrollmentRepository.countByplan(enrollmentRecord.getPlan());
+
+            if (enrollmentRecord != null) {
+                enrollmentRecord.setRating(enrollment.getRating());
+            }
+            enrollmentRepository.save(enrollmentRecord);
+
+            double newAverageRating = (listing.getAvgRating() * countEnrollments + enrollment.getRating()) / ++countEnrollments;
+            listing.setAvgRating(newAverageRating);
+            listingRepository.save(listing);
             return new ResponseEntity<>(null, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
