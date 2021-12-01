@@ -1,5 +1,6 @@
 package com.wellness.tracking.controller;
 
+import java.awt.print.Book;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -7,12 +8,10 @@ import java.util.Optional;
 import com.wellness.tracking.dto.ListingDTO;
 import com.wellness.tracking.dto.mapper.ListingMapper;
 import com.wellness.tracking.model.*;
-import com.wellness.tracking.repository.ListingRepository;
+import com.wellness.tracking.repository.*;
 
-import com.wellness.tracking.repository.ListingSummaryRepository;
-import com.wellness.tracking.repository.PublicUserRepository;
-import com.wellness.tracking.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,6 +25,7 @@ public class ListingController {
     final ListingRepository listingRepository;
     final ListingSummaryRepository listingSummaryRepository;
     final PublicUserRepository publicUserRepository;
+    final EnrollmentRepository enrollmentRepository;
 
     @GetMapping("/listing")
     public ResponseEntity<List<ListingSummary>> getAllListings(@RequestParam(required = false) String q) {
@@ -33,8 +33,8 @@ public class ListingController {
         if (q == null) {
             listingSummaryRepository.findAllByIsPrivateIsFalse().forEach(listings::add);
         } else {
-            listingSummaryRepository.findByDescriptionContainingAndIsPrivateIsFalse(q).forEach(listings::add);
-            listingSummaryRepository.findByUserIn(publicUserRepository.findByFirstNameContaining(q)).forEach(listings::add);
+            listingSummaryRepository.findByDescriptionIgnoreCaseContainingAndIsPrivateIsFalse(q).forEach(listings::add);
+            listingSummaryRepository.findByUserIgnoreCaseIn(publicUserRepository.findByFirstNameContaining(q)).forEach(listings::add);
         }
         return new ResponseEntity<>(listings, HttpStatus.OK);
     }
