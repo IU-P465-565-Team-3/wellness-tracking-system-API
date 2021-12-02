@@ -33,8 +33,8 @@ public class ListingController {
         if (q == null) {
             listingSummaryRepository.findAllByIsPrivateIsFalse().forEach(listings::add);
         } else {
-            listingSummaryRepository.findByDescriptionIgnoreCaseContainingAndIsPrivateIsFalse(q).forEach(listings::add);
-            listingSummaryRepository.findByUserIgnoreCaseIn(publicUserRepository.findByFirstNameContaining(q)).forEach(listings::add);
+            listingSummaryRepository.findByDescriptionContainingAndIsPrivateIsFalse(q).forEach(listings::add);
+            listingSummaryRepository.findByUserIn(publicUserRepository.findByFirstNameContaining(q)).forEach(listings::add);
         }
         return new ResponseEntity<>(listings, HttpStatus.OK);
     }
