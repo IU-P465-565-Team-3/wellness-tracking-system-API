@@ -2,7 +2,11 @@ package com.wellness.tracking.controller;
 
 import com.wellness.tracking.dto.JwtResponse;
 import com.wellness.tracking.dto.UserDTO;
+import com.wellness.tracking.enums.Role;
+import com.wellness.tracking.model.Enrollment;
+import com.wellness.tracking.model.ListingSummary;
 import com.wellness.tracking.model.PublicUser;
+import com.wellness.tracking.model.User;
 import com.wellness.tracking.repository.PublicUserRepository;
 import com.wellness.tracking.security.JwtTokenUtil;
 import com.wellness.tracking.service.impl.UserService;
@@ -21,6 +25,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -79,5 +85,12 @@ public class UserController {
         } catch (BadCredentialsException e) {
             throw new Exception("INVALID_CREDENTIALS", e);
         }
+    }
+
+    @GetMapping("/getProfessionals")
+    public ResponseEntity<List<PublicUser>> getProfessionals() {
+        List<PublicUser> publicUsers = new ArrayList<>();
+        publicUserRepository.findUserByRole(Role.PROFESSIONAL).forEach(publicUsers::add);
+        return new ResponseEntity<>(publicUsers, HttpStatus.OK);
     }
 }
