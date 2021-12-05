@@ -74,8 +74,10 @@ public class EnrollmentController {
         }
     }
 
+    // Need to test it
+
     @PostMapping("/updateEnrollment")
-    public ResponseEntity updateEnrollment(@RequestBody Enrollment enrollment, User user) {
+    public ResponseEntity updateEnrollment(@RequestBody Enrollment enrollment) {
         try {
             Enrollment enrollmentRecord = enrollmentRepository.findEnrollmentById(enrollment.getId());
             Listing listing = listingRepository.getById(enrollmentRecord.getPlan().getId());

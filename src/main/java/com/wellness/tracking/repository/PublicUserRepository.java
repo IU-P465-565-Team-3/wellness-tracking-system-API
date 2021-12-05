@@ -2,7 +2,6 @@ package com.wellness.tracking.repository;
 
 import com.wellness.tracking.enums.Role;
 import com.wellness.tracking.model.PublicUser;
-import com.wellness.tracking.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
