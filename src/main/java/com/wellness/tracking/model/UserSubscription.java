@@ -1,3 +1,4 @@
+/*
 package com.wellness.tracking.model;
 
 import lombok.Getter;
@@ -20,3 +21,4 @@ public class UserSubscription extends AbstractPersistable<Long> {
     @Column
     private PublicUser user;
 }
+*/

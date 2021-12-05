@@ -1,3 +1,4 @@
+/*
 package com.wellness.tracking.controller;
 
 import com.wellness.tracking.model.Enrollment;
@@ -23,4 +24,4 @@ public class SubscriptionController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-}
+}*/
