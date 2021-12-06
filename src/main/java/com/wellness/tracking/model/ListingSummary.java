@@ -1,5 +1,7 @@
 package com.wellness.tracking.model;
 
+import org.hibernate.annotations.Formula;
+
 import javax.persistence.*;
 
 @Entity

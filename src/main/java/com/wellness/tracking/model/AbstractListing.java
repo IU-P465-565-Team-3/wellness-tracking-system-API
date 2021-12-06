@@ -4,10 +4,14 @@ import com.wellness.tracking.enums.ListingType;
 import com.wellness.tracking.enums.converter.ListingTypeConverter;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.Type;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import javax.persistence.*;
+import java.sql.Date;
+import java.util.Collection;
 import java.util.Set;
 
 @MappedSuperclass
@@ -42,13 +46,16 @@ public abstract class AbstractListing extends AbstractPersistable<Long> {
     @Column
     private Boolean isApproved;
 
-    @Column
-    private Double avgRating;
-
     @ManyToMany
     @JoinTable(
             name = "listing_tag",
             joinColumns = @JoinColumn(name = "listing_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tags;
+
+    @Formula("(select avg(r.rating) from review as r where r.listing_id = id)")
+    private Double averageRating;
+
+    @CreationTimestamp
+    private Date createdDate;
 }

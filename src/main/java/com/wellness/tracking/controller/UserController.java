@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -75,6 +76,16 @@ public class UserController {
         } else {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<PublicUser> getUserDetails(@PathVariable Long userId) {
+        Optional<PublicUser> user = publicUserRepository.findById(userId);
+        if (!user.isPresent()) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(user.get(), HttpStatus.OK);
     }
 
     private Authentication authenticate(String username, String password) throws Exception {
