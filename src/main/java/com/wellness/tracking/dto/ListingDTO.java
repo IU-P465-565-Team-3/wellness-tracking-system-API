@@ -2,10 +2,7 @@ package com.wellness.tracking.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.wellness.tracking.enums.ListingType;
-import com.wellness.tracking.model.Event;
-import com.wellness.tracking.model.MediaContent;
-import com.wellness.tracking.model.PublicUser;
-import com.wellness.tracking.model.Tag;
+import com.wellness.tracking.model.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -43,4 +40,8 @@ public class ListingDTO<PK extends java.io.Serializable> {
     private Collection<Event> events;
 
     private Collection<MediaContent> content;
+
+    private Double averageRating;
+
+    private Collection<Review> reviews;
 }

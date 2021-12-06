@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -14,4 +15,7 @@ public interface ListingSummaryRepository extends JpaRepository<ListingSummary, 
     List<ListingSummary> findByDescriptionContainingAndIsPrivateIsFalse(String q);
     List<ListingSummary> findByUserIn(List<PublicUser> user);
     List<ListingSummary> findByUser(PublicUser user);
+    List<ListingSummary> findAllByIdInAndIsPrivateIsFalse(Collection<Long> id);
+    List<ListingSummary> findByUserInAndIdNotInAndIsPrivateIsFalse(Collection<PublicUser> publishers, Collection<Long> listingIds);
+    List<ListingSummary> findByIdInAndIdNotInAndIsPrivateIsFalse(Collection<Long> includeIds, Collection<Long> excludeIds);
 }

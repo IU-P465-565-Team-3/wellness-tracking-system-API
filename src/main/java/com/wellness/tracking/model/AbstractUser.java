@@ -7,6 +7,7 @@ import org.hibernate.annotations.Type;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import javax.persistence.*;
+import java.sql.Date;
 
 @MappedSuperclass
 @Getter
@@ -26,4 +27,10 @@ public abstract class AbstractUser extends AbstractPersistable<Long> {
 
     @Column
     protected String lastName;
+
+    @Column
+    private String gender;
+
+    @Column
+    private Date dateOfBirth;
 }

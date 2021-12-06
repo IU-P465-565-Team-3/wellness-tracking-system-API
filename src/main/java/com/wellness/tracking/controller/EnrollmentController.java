@@ -42,7 +42,7 @@ public class EnrollmentController {
     @PostMapping("/enrollment")
     public ResponseEntity createEnrollment(@RequestBody Enrollment enrollment) {
         try {
-            FitnessPlan plan = enrollment.getPlan();
+            Listing plan = enrollment.getListing();
             PublicUser currentUser = getCurrentUser();
             plan.setUser(currentUser);
             enrollment.setUser(currentUser);
@@ -55,7 +55,7 @@ public class EnrollmentController {
     }
 
     /*
-     * Workflow for user to enroll in published plans.
+     * Workflow for user to enroll in published listings.
      * */
     @PostMapping("/enrollment/{listingId}")
     public ResponseEntity createEnrollment(@RequestBody Enrollment enrollment, @PathVariable Long listingId) {
@@ -66,7 +66,7 @@ public class EnrollmentController {
             }
             PublicUser currentUser = getCurrentUser();
             enrollment.setUser(currentUser);
-            enrollment.setPlan((FitnessPlan) listing.get());
+            enrollment.setListing(listing.get());
             enrollmentRepository.save(enrollment);
             return new ResponseEntity<>(null, HttpStatus.OK);
         } catch (Exception e) {
@@ -74,22 +74,10 @@ public class EnrollmentController {
         }
     }
 
-    @PostMapping("/updateEnrollment")
-    public ResponseEntity updateEnrollment(@RequestBody Enrollment enrollment, User user) {
+    @PutMapping("/enrollment")
+    public ResponseEntity updateEnrollment(@RequestBody Enrollment enrollment) {
         try {
-            Enrollment enrollmentRecord = enrollmentRepository.findEnrollmentById(enrollment.getId());
-            Listing listing = listingRepository.getById(enrollmentRecord.getPlan().getId());
-
-            long countEnrollments = enrollmentRepository.countByplan(enrollmentRecord.getPlan());
-
-            if (enrollmentRecord != null) {
-                enrollmentRecord.setRating(enrollment.getRating());
-            }
-            enrollmentRepository.save(enrollmentRecord);
-
-            double newAverageRating = (listing.getAvgRating() * countEnrollments + enrollment.getRating()) / ++countEnrollments;
-            listing.setAvgRating(newAverageRating);
-            listingRepository.save(listing);
+            enrollmentRepository.save(enrollment);
             return new ResponseEntity<>(null, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);

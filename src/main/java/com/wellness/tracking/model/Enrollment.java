@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import java.sql.Date;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -20,19 +21,8 @@ public class Enrollment extends AbstractPersistable<Long> {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "listing_id", nullable = false, foreignKey = @ForeignKey(name = "FK_ENROLLMENT_LISTING"))
-    private FitnessPlan plan;
+    private Listing listing;
 
     @Column
     private Date startDate;
-
-    @Column
-    private Double rating;
-
-    @ManyToMany
-    @JoinTable(
-            name = "enrollment_age_group",
-            joinColumns = @JoinColumn(name = "enrollment_id"),
-            inverseJoinColumns = @JoinColumn(name = "age_group_id")
-    )
-    private Set<AgeGroup> ageGroupSet;
 }
