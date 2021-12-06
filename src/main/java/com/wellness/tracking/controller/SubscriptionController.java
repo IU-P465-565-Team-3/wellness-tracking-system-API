@@ -24,37 +24,12 @@ public class SubscriptionController {
     final PublicUserRepository publicUserRepository;
 
     @GetMapping("/subscription")
-    public ResponseEntity<List<PublicUser>> getSubscriptions() {
+    public ResponseEntity<List<PublicUser>> getSubscribedProfessionals() {
         PublicUser currentUser = getCurrentPublicUser();
-        if (!currentUser.getRole().equals(Role.PROFESSIONAL)) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
-        List<Subscription> subscriptions = subscriptionRepository.findAllByProducer(currentUser);
+        List<Subscription> subscriptions = subscriptionRepository.findAllByConsumer(currentUser);
         List<PublicUser> consumers = new ArrayList<>();
-        subscriptions.stream().map(sub -> sub.getConsumer()).forEach(consumers::add);
+        subscriptions.stream().map(sub -> sub.getProducer()).forEach(consumers::add);
         return new ResponseEntity<>(consumers, HttpStatus.OK);
-    }
-
-    @GetMapping("/subscription/{producerId}")
-    public ResponseEntity<List<PublicUser>> getSubscriptionsById(@PathVariable Long producerId) {
-        Optional<PublicUser> producer = publicUserRepository.findById(producerId);
-            if (!producer.isPresent()) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
-        List<Subscription> subscriptions = subscriptionRepository.findAllByProducer(producer.get());
-        List<PublicUser> consumers = new ArrayList<>();
-        subscriptions.stream().map(sub -> sub.getConsumer()).forEach(consumers::add);
-        return new ResponseEntity<>(consumers, HttpStatus.OK);
-    }
-
-    @GetMapping("/subscription/{producerId}/count")
-    public ResponseEntity<Long> getSubscriptionCountById(@PathVariable Long producerId) {
-        Optional<PublicUser> producer = publicUserRepository.findById(producerId);
-        if (!producer.isPresent()) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
-        Long subscriptionCount = subscriptionRepository.countAllByProducer(producer.get());
-        return new ResponseEntity<>(subscriptionCount, HttpStatus.OK);
     }
 
     @PostMapping("/subscription/{producerId}")
@@ -72,6 +47,40 @@ public class SubscriptionController {
         subscription.setProducer(producer.get());
         subscriptionRepository.save(subscription);
         return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
+    }
+
+    @GetMapping("/user/subscriber")
+    public ResponseEntity<List<PublicUser>> getSubscribers() {
+        PublicUser currentUser = getCurrentPublicUser();
+        if (!currentUser.getRole().equals(Role.PROFESSIONAL)) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        List<Subscription> subscriptions = subscriptionRepository.findAllByProducer(currentUser);
+        List<PublicUser> consumers = new ArrayList<>();
+        subscriptions.stream().map(sub -> sub.getConsumer()).forEach(consumers::add);
+        return new ResponseEntity<>(consumers, HttpStatus.OK);
+    }
+
+    @GetMapping("/user/{producerId}/subscriber/")
+    public ResponseEntity<List<PublicUser>> getSubscriptionsById(@PathVariable Long producerId) {
+        Optional<PublicUser> producer = publicUserRepository.findById(producerId);
+            if (!producer.isPresent()) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        List<Subscription> subscriptions = subscriptionRepository.findAllByProducer(producer.get());
+        List<PublicUser> consumers = new ArrayList<>();
+        subscriptions.stream().map(sub -> sub.getConsumer()).forEach(consumers::add);
+        return new ResponseEntity<>(consumers, HttpStatus.OK);
+    }
+
+    @GetMapping("user/{producerId}/subscriber/count")
+    public ResponseEntity<Long> getSubscriptionCountById(@PathVariable Long producerId) {
+        Optional<PublicUser> producer = publicUserRepository.findById(producerId);
+        if (!producer.isPresent()) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        Long subscriptionCount = subscriptionRepository.countAllByProducer(producer.get());
+        return new ResponseEntity<>(subscriptionCount, HttpStatus.OK);
     }
 
     public PublicUser getCurrentPublicUser() {
