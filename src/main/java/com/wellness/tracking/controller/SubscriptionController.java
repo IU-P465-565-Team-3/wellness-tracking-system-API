@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,23 +24,27 @@ public class SubscriptionController {
     final PublicUserRepository publicUserRepository;
 
     @GetMapping("/subscription")
-    public ResponseEntity<List<Subscription>> getSubscriptions() {
+    public ResponseEntity<List<PublicUser>> getSubscriptions() {
         PublicUser currentUser = getCurrentPublicUser();
         if (!currentUser.getRole().equals(Role.PROFESSIONAL)) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
         List<Subscription> subscriptions = subscriptionRepository.findAllByProducer(currentUser);
-        return new ResponseEntity<>(subscriptions, HttpStatus.OK);
+        List<PublicUser> consumers = new ArrayList<>();
+        subscriptions.stream().map(sub -> sub.getConsumer()).forEach(consumers::add);
+        return new ResponseEntity<>(consumers, HttpStatus.OK);
     }
 
     @GetMapping("/subscription/{producerId}")
-    public ResponseEntity<List<Subscription>> getSubscriptionsById(@PathVariable Long producerId) {
+    public ResponseEntity<List<PublicUser>> getSubscriptionsById(@PathVariable Long producerId) {
         Optional<PublicUser> producer = publicUserRepository.findById(producerId);
             if (!producer.isPresent()) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
         List<Subscription> subscriptions = subscriptionRepository.findAllByProducer(producer.get());
-        return new ResponseEntity<>(subscriptions, HttpStatus.OK);
+        List<PublicUser> consumers = new ArrayList<>();
+        subscriptions.stream().map(sub -> sub.getConsumer()).forEach(consumers::add);
+        return new ResponseEntity<>(consumers, HttpStatus.OK);
     }
 
     @GetMapping("/subscription/{producerId}/count")

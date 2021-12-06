@@ -56,8 +56,8 @@ public class RecommendationController {
 
        List<ListingSummary> recommendations = listingSummaryRepository
                .findAllByIdInAndIsPrivateIsFalse(similarListingIds);
-       recommendations = recommendations.subList(0, Math.min(30, recommendations.size()));
        Collections.shuffle(recommendations);
+       recommendations = recommendations.subList(0, Math.min(30, recommendations.size()));
        return new ResponseEntity<>(recommendations, HttpStatus.OK);
     }
 
@@ -75,8 +75,8 @@ public class RecommendationController {
                 .forEach(enrolledListingIds::add);
 
         List<ListingSummary> recommendations = listingSummaryRepository.findByUserInAndIdNotInAndIsPrivateIsFalse(subscribedProducers, enrolledListingIds);
-        recommendations = recommendations.subList(0, Math.min(30, recommendations.size()));
         Collections.shuffle(recommendations);
+        recommendations = recommendations.subList(0, Math.min(30, recommendations.size()));
         return new ResponseEntity<>(recommendations, HttpStatus.OK);
     }
 
@@ -101,8 +101,8 @@ public class RecommendationController {
                 .forEach(enrolledListingIds::add);
 
         List<ListingSummary> recommendations = listingSummaryRepository.findByIdInAndIdNotInAndIsPrivateIsFalse(similarListingIds, enrolledListingIds);
-        recommendations = recommendations.subList(0, Math.min(30, recommendations.size()));
         Collections.shuffle(recommendations);
+        recommendations = recommendations.subList(0, Math.min(30, recommendations.size()));
         return new ResponseEntity<>(recommendations, HttpStatus.OK);
     }
 
