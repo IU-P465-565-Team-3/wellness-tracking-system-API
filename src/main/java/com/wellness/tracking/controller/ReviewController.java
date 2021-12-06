@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -28,13 +29,14 @@ public class ReviewController {
 
     @PostMapping("/listing/{listingId}/review")
     public ResponseEntity<String> createReview(@PathVariable Long listingId, @RequestBody Review review) {
-        Optional<Listing> listing = listingRepository.findById(listingId);
-        if (!listing.isPresent()) {
+        Boolean exists = listingRepository.existsById(listingId);
+        if (!exists) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
-
-        listing.get().getReviews().add(review);
-        listingRepository.save(listing.get());
+        PublicUser currentUser = getCurrentPublicUser();
+        review.setListingId(listingId);
+        review.setUser(currentUser);
+        reviewRepository.save(review);
         return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
     }
 
@@ -45,12 +47,24 @@ public class ReviewController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
         PublicUser currentUser = getCurrentPublicUser();
-        Optional<Review> userReview = reviewRepository.findByUserAndListingId(currentUser, listingId);
+        Optional<Review> userReview = reviewRepository.findByListingIdAndUser(listingId, currentUser);
         if (!userReview.isPresent()) {
             return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         }
 
         return new ResponseEntity<>(userReview.get(), HttpStatus.OK);
+    }
+
+    @GetMapping("/listing/{listingId}/review")
+    public ResponseEntity<List<Review>> getListingReviewsExceptCurrent(@PathVariable Long listingId) {
+        Boolean exists = listingRepository.existsById(listingId);
+        if (!exists) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        PublicUser currentUser = getCurrentPublicUser();
+        List<Review> listingReviews = reviewRepository.findByListingIdAndUserIsNotOrderByCreatedDateDesc(listingId, currentUser);
+
+        return new ResponseEntity<>(listingReviews, HttpStatus.OK);
     }
 
     public PublicUser getCurrentPublicUser() {

@@ -42,6 +42,4 @@ public class ListingDTO<PK extends java.io.Serializable> {
     private Collection<MediaContent> content;
 
     private Double averageRating;
-
-    private Collection<Review> reviews;
 }
