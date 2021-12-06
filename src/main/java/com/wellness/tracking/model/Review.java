@@ -2,16 +2,18 @@ package com.wellness.tracking.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.jpa.domain.AbstractPersistable;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.sql.Timestamp;
 
 @Entity
 @Getter
 @Setter
+@EntityListeners(AuditingEntityListener.class)
 public class Review extends AbstractPersistable<Long> {
     private Integer rating;
 
@@ -21,12 +23,12 @@ public class Review extends AbstractPersistable<Long> {
     @JoinColumn(name = "reviewer_id", nullable = false, foreignKey = @ForeignKey(name = "FK_REVIEW_USER"))
     private PublicUser user;
 
-    @Column(name = "listing_id", insertable = false, updatable = false)
+    @JoinColumn(name = "listing_id", nullable = false, foreignKey = @ForeignKey(name = "FK_REVIEW_LISTING"))
     private Long listingId;
 
-    @CreatedDate
-    private Date createdDate;
+    @CreationTimestamp
+    private Timestamp createdDate;
 
-    @LastModifiedDate
-    private Date lastModifiedDate;
+    @UpdateTimestamp
+    private Timestamp lastModifiedDate;
 }

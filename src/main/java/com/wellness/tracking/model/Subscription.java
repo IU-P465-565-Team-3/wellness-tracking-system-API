@@ -2,15 +2,17 @@ package com.wellness.tracking.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.jpa.domain.AbstractPersistable;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.sql.Timestamp;
 
 @Entity
 @Getter
 @Setter
+@EntityListeners(AuditingEntityListener.class)
 public class Subscription extends AbstractPersistable<Long> {
 
     @ManyToOne(cascade = CascadeType.ALL)
@@ -21,6 +23,6 @@ public class Subscription extends AbstractPersistable<Long> {
     @JoinColumn(name = "consumer_id", nullable = false, foreignKey = @ForeignKey(name = "FK_SUBSCRIPTION_CONSUMER"))
     private PublicUser consumer;
 
-    @CreatedDate
-    private Date createdAt;
+    @CreationTimestamp
+    private Timestamp createdDate;
 }

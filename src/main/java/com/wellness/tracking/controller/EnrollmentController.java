@@ -36,6 +36,21 @@ public class EnrollmentController {
         }
     }
 
+    @GetMapping("/listing/{listingId}/enrollment/count")
+    public ResponseEntity<Long> getEnrollmentCount(@PathVariable Long listingId) {
+        try {
+            PublicUser currentUser = getCurrentUser();
+            Optional<Listing> listing = listingRepository.findById(listingId);
+            if (!listing.isPresent()) {
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            }
+            Long enrollmentCount = enrollmentRepository.countByListingAndUser(listing.get(), currentUser);
+            return new ResponseEntity<>(enrollmentCount, HttpStatus.OK);
+        } catch(Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     /*
     * Workflow for user to create and enroll to their own plan.
     * */

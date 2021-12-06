@@ -12,8 +12,4 @@ import java.util.Collection;
 @Getter
 @Setter
 public class Listing extends AbstractListing {
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "listing_id", nullable = false, foreignKey = @ForeignKey(name = "FK_REVIEW_LISTING"))
-    @OrderBy("createdDate desc")
-    private Collection<Review> reviews;
 }
