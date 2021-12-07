@@ -47,7 +47,7 @@ public class RecommendationController {
                .map(enrollment -> enrollment.getListing().getId())
                .forEach(enrolledListingIds::add);
 
-       Set<Tag> tags = listingSource.get().getTags();
+       List<Tag> tags = listingSource.get().getTags();
        Set<Long> similarListingIds = new HashSet<>();
        for (Tag tag : tags) {
            tag.getListings().stream().map(listing -> listingId).forEach(similarListingIds::add);

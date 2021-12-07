@@ -11,8 +11,7 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import javax.persistence.*;
 import java.sql.Date;
-import java.util.Collection;
-import java.util.Set;
+import java.util.List;
 
 @MappedSuperclass
 @Getter
@@ -46,12 +45,12 @@ public abstract class AbstractListing extends AbstractPersistable<Long> {
     @Column
     private Boolean isApproved;
 
-    @ManyToMany
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(
             name = "listing_tag",
             joinColumns = @JoinColumn(name = "listing_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
-    private Set<Tag> tags;
+    private List<Tag> tags;
 
     @Formula("(select avg(r.rating) from review as r where r.listing_id = id)")
     private Double averageRating;

@@ -61,10 +61,10 @@ public class SubscriptionController {
         return new ResponseEntity<>(consumers, HttpStatus.OK);
     }
 
-    @GetMapping("/user/{producerId}/subscriber/")
+    @GetMapping("/user/{producerId}/subscriber")
     public ResponseEntity<List<PublicUser>> getSubscriptionsById(@PathVariable Long producerId) {
         Optional<PublicUser> producer = publicUserRepository.findById(producerId);
-            if (!producer.isPresent()) {
+        if (!producer.isPresent()) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
         List<Subscription> subscriptions = subscriptionRepository.findAllByProducer(producer.get());

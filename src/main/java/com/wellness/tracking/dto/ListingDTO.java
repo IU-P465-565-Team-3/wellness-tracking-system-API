@@ -8,7 +8,7 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
-import java.util.Set;
+import java.util.List;
 
 @Getter
 @Setter
@@ -35,7 +35,7 @@ public class ListingDTO<PK extends java.io.Serializable> {
 
     private Boolean isApproved;
 
-    private Set<Tag> tags;
+    private List<Tag> tags;
 
     private Collection<Event> events;
 

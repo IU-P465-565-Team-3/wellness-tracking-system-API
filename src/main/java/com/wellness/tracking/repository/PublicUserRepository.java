@@ -14,4 +14,5 @@ public interface PublicUserRepository extends JpaRepository<PublicUser, Long> {
 	List<PublicUser> findByFirstNameContaining(String q);
 	List<PublicUser> findUserByRole(Role role);
 	List<PublicUser> findByGenderIsAndDateOfBirthBetween(String gender, Date startAge, Date endAge);
+	List<PublicUser> findByFirstNameContainingOrLastNameContaining(String firstName, String lastName);
 }
