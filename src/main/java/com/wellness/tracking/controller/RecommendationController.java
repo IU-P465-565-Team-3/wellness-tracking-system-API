@@ -25,6 +25,7 @@ public class RecommendationController {
     final AgeGroupRepository ageGroupRepository;
     final EnrollmentRepository enrollmentRepository;
     final SubscriptionRepository subscriptionRepository;
+    final TagRepository tagRepository;
 
     @GetMapping("/recommendations")
     public ResponseEntity<List<ListingSummary>> getRecommendations() {
@@ -35,7 +36,7 @@ public class RecommendationController {
     }
 
     @GetMapping("/recommendation/listing/{listingId}")
-    public ResponseEntity<List<ListingSummary>> getTagListingRecommendations(@PathVariable Long listingId) {
+    public ResponseEntity<List<ListingSummary>> getListingBasedRecommendations(@PathVariable Long listingId) {
        Optional<Listing> listingSource = listingRepository.findById(listingId);
        PublicUser currentUser = getCurrentPublicUser();
        if (!listingSource.isPresent()) {
@@ -50,7 +51,7 @@ public class RecommendationController {
        List<Tag> tags = listingSource.get().getTags();
        Set<Long> similarListingIds = new HashSet<>();
        for (Tag tag : tags) {
-           tag.getListings().stream().map(listing -> listingId).forEach(similarListingIds::add);
+           tag.getListings().stream().map(listing -> listing.getId()).forEach(similarListingIds::add);
        }
        similarListingIds.removeAll(enrolledListingIds);
 
@@ -59,6 +60,31 @@ public class RecommendationController {
        Collections.shuffle(recommendations);
        recommendations = recommendations.subList(0, Math.min(30, recommendations.size()));
        return new ResponseEntity<>(recommendations, HttpStatus.OK);
+    }
+
+    @GetMapping("/recommendation/tag/{tagId}")
+    public ResponseEntity<List<ListingSummary>> getTagBasedRecommendations(@PathVariable Long tagId) {
+        Optional<Tag> tagRecord = tagRepository.findById(tagId);
+        PublicUser currentUser = getCurrentPublicUser();
+        if (!tagRecord.isPresent()) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        Set<Long> enrolledListingIds = new HashSet<>();
+        enrollmentRepository.findAllByUser(currentUser).stream()
+                .map(enrollment -> enrollment.getListing().getId())
+                .forEach(enrolledListingIds::add);
+
+        Set<Long> similarListingIds = new HashSet<>();
+        Tag tag = tagRecord.get();
+        tag.getListings().stream().map(listing -> listing.getId()).forEach(similarListingIds::add);
+        similarListingIds.removeAll(enrolledListingIds);
+
+        List<ListingSummary> recommendations = listingSummaryRepository
+                .findAllByIdInAndIsPrivateIsFalse(similarListingIds);
+        Collections.shuffle(recommendations);
+        recommendations = recommendations.subList(0, Math.min(30, recommendations.size()));
+        return new ResponseEntity<>(recommendations, HttpStatus.OK);
     }
 
     @GetMapping("/recommendation/subscription")
@@ -97,7 +123,7 @@ public class RecommendationController {
 
         Set<Long> enrolledListingIds = new HashSet<>();
         enrollmentRepository.findAllByUser(currentUser).stream()
-                .map(enrollment -> enrollment.getUser().getId())
+                .map(enrollment -> enrollment.getListing().getId())
                 .forEach(enrolledListingIds::add);
 
         List<ListingSummary> recommendations = listingSummaryRepository.findByIdInAndIdNotInAndIsPrivateIsFalse(similarListingIds, enrolledListingIds);

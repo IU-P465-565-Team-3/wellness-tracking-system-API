@@ -1,5 +1,6 @@
 package com.wellness.tracking.controller;
 
+import com.wellness.tracking.dto.mapper.ListingMapper;
 import com.wellness.tracking.model.*;
 import com.wellness.tracking.repository.EnrollmentRepository;
 import com.wellness.tracking.repository.ListingRepository;
@@ -57,11 +58,16 @@ public class EnrollmentController {
     @PostMapping("/enrollment")
     public ResponseEntity createEnrollment(@RequestBody Enrollment enrollment) {
         try {
-            Listing plan = enrollment.getListing();
+            // Temp fix - issue due to JPA inheritance
+            ListingMapper mapper = new ListingMapper<Long>();
+            Listing listing = mapper.toListing(mapper.toListingDTO(enrollment.getListing()));
+            enrollment.setListing(listing);
+            // temp fix end
             PublicUser currentUser = getCurrentUser();
-            plan.setUser(currentUser);
+            listing.setUser(currentUser);
             enrollment.setUser(currentUser);
-            plan.setIsPrivate(true);
+            listing.setIsPrivate(true);
+            listing.setIsApproved(true);
             enrollmentRepository.save(enrollment);
             return new ResponseEntity<>(null, HttpStatus.OK);
         } catch(Exception e) {
