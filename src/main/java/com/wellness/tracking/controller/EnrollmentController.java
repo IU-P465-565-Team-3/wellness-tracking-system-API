@@ -1,6 +1,7 @@
 package com.wellness.tracking.controller;
 
-import com.wellness.tracking.dto.mapper.ListingMapper;
+import com.wellness.tracking.dto.EnrollmentDTO;
+import com.wellness.tracking.dto.mapper.EnrollmentMapper;
 import com.wellness.tracking.model.*;
 import com.wellness.tracking.repository.EnrollmentRepository;
 import com.wellness.tracking.repository.ListingRepository;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,10 +29,13 @@ public class EnrollmentController {
     final EnrollmentRepository enrollmentRepository;
 
     @GetMapping("/enrollment")
-    public ResponseEntity<List<Enrollment>> getEnrollments() {
+    public ResponseEntity<List<EnrollmentDTO>> getEnrollments() {
         try {
             PublicUser currentUser = getCurrentUser();
-            List<Enrollment> enrollments = enrollmentRepository.findAllByUser(currentUser);
+            List<Enrollment> enrollmentRecords = enrollmentRepository.findAllByUser(currentUser);
+            List<EnrollmentDTO> enrollments = new ArrayList<>();
+            EnrollmentMapper<Long> mapper = new EnrollmentMapper<>();
+            enrollmentRecords.stream().map(record -> mapper.toEnrollmentDTO(record)).forEach(enrollments::add);
             return new ResponseEntity<>(enrollments, HttpStatus.OK);
         } catch(Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -56,18 +61,15 @@ public class EnrollmentController {
     * Workflow for user to create and enroll to their own plan.
     * */
     @PostMapping("/enrollment")
-    public ResponseEntity createEnrollment(@RequestBody Enrollment enrollment) {
+    public ResponseEntity createEnrollment(@RequestBody EnrollmentDTO enrollmentDTO) {
         try {
-            // Temp fix - issue due to JPA inheritance
-            ListingMapper mapper = new ListingMapper<Long>();
-            Listing listing = mapper.toListing(mapper.toListingDTO(enrollment.getListing()));
-            enrollment.setListing(listing);
-            // temp fix end
             PublicUser currentUser = getCurrentUser();
-            listing.setUser(currentUser);
-            enrollment.setUser(currentUser);
+            Enrollment enrollment = EnrollmentMapper.toEnrollment(enrollmentDTO);
+            Listing listing = enrollment.getListing();
             listing.setIsPrivate(true);
             listing.setIsApproved(true);
+            listing.setUser(currentUser);
+            enrollment.setUser(currentUser);
             enrollmentRepository.save(enrollment);
             return new ResponseEntity<>(null, HttpStatus.OK);
         } catch(Exception e) {
@@ -79,13 +81,14 @@ public class EnrollmentController {
      * Workflow for user to enroll in published listings.
      * */
     @PostMapping("/enrollment/{listingId}")
-    public ResponseEntity createEnrollment(@RequestBody Enrollment enrollment, @PathVariable Long listingId) {
+    public ResponseEntity createEnrollment(@RequestBody EnrollmentDTO enrollmentDTO, @PathVariable Long listingId) {
         try {
             Optional<Listing> listing = listingRepository.findById(listingId);
             if (!listing.isPresent()) {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
             PublicUser currentUser = getCurrentUser();
+            Enrollment enrollment = EnrollmentMapper.toEnrollment(enrollmentDTO);
             enrollment.setUser(currentUser);
             enrollment.setListing(listing.get());
             enrollmentRepository.save(enrollment);
@@ -96,8 +99,9 @@ public class EnrollmentController {
     }
 
     @PutMapping("/enrollment")
-    public ResponseEntity updateEnrollment(@RequestBody Enrollment enrollment) {
+    public ResponseEntity updateEnrollment(@RequestBody EnrollmentDTO enrollmentDTO) {
         try {
+            Enrollment enrollment = EnrollmentMapper.toEnrollment(enrollmentDTO);
             enrollmentRepository.save(enrollment);
             return new ResponseEntity<>(null, HttpStatus.OK);
         } catch (Exception e) {
