@@ -17,6 +17,7 @@ public interface ListingSummaryRepository extends JpaRepository<ListingSummary, 
     List<ListingSummary> findAllByIdInAndIsPrivateIsFalse(Collection<Long> id);
     List<ListingSummary> findByUserInAndIdNotInAndIsPrivateIsFalse(Collection<PublicUser> publishers, Collection<Long> listingIds);
     List<ListingSummary> findByIdInAndIdNotInAndIsPrivateIsFalse(Collection<Long> includeIds, Collection<Long> excludeIds);
+    List<ListingSummary> findByIdInAndIsPrivateIsFalse(Collection<Long> includeIds);
     List<ListingSummary> findByNameContainingOrDescriptionContainingAndIsPrivateIsFalse(String name, String description);
     List<ListingSummary> findByUserInAndIsPrivateIsFalse(List<PublicUser> publishers);
     List<ListingSummary> findByTagsInAndIsPrivateIsFalse(List<Tag> tags);

@@ -126,7 +126,12 @@ public class RecommendationController {
                 .map(enrollment -> enrollment.getListing().getId())
                 .forEach(enrolledListingIds::add);
 
-        List<ListingSummary> recommendations = listingSummaryRepository.findByIdInAndIdNotInAndIsPrivateIsFalse(similarListingIds, enrolledListingIds);
+        List<ListingSummary> recommendations;
+        if (enrolledListingIds.size() == 0)
+            recommendations = listingSummaryRepository.findByIdInAndIsPrivateIsFalse(similarListingIds);
+        else {
+            recommendations = listingSummaryRepository.findByIdInAndIdNotInAndIsPrivateIsFalse(similarListingIds, enrolledListingIds);
+        }
         Collections.shuffle(recommendations);
         recommendations = recommendations.subList(0, Math.min(30, recommendations.size()));
         return new ResponseEntity<>(recommendations, HttpStatus.OK);
